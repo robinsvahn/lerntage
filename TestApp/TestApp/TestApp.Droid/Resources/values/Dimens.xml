@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <!-- Default screen margins, per the Android Design guidelines. -->
+  <dimen name="activity_horizontal_margin">1dp</dimen>
+  <dimen name="activity_vertical_margin">1dp</dimen>
+  <dimen name="close_button_size_detailpage">36dp</dimen>
+  <dimen name="padding_bottom_taskbar_textviews">5dp</dimen>
+  <dimen name="text_size_title_detail_page">24sp</dimen>
+  <dimen name="text_margin">16dp</dimen>
+  <dimen name="listview_spacing_normal">5dp</dimen>
+  <dimen name="searchview_height">48dp</dimen>
+</resources>
