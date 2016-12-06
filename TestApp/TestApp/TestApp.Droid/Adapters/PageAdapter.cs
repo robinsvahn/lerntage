@@ -10,35 +10,51 @@ using Android.Runtime;
 using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
+using Java.Lang;
 using TestApp.Droid.Fragments;
-using Fragment = Android.Support.V4.App.Fragment;
-using FragmentManager = Android.Support.V4.App.FragmentManager;
+using SupportFragment = Android.Support.V4.App.Fragment;
+using SupportFragmentManager = Android.Support.V4.App.FragmentManager;
 
 namespace TestApp.Droid.Adapters
 {
-    class PageAdapter : FragmentStatePagerAdapter
+    class PageAdapter : FragmentPagerAdapter
     {
-        private List<Fragment> _fragments;
-        private int _fragmentCount;
-
-        public PageAdapter(FragmentManager fm) : base(fm)
+        public PageAdapter(SupportFragmentManager fm) : base(fm)
         {
-            _fragments = new List<Fragment>();
-            _fragments.Add(new SampleTabFragment());
-            _fragments.Add(new SampleTabFragment());
-
-            _fragmentCount = _fragments.Count;
+            //_fragments = new List<SupportFragment>();
+            //_fragments.Add(new SampleTabFragment());
+            //_fragments.Add(new SampleTabFragment());
+            Fragments = new List<SupportFragment>();
+            FragmentNames = new List<string>();
         }
+
+        public List<SupportFragment> Fragments { get; set; }
+        public List<string> FragmentNames { get; set; }
 
         public override int Count
         {
-            get { return _fragmentCount; }
+            get
+            {
+                return Fragments.Count;
+            }
         }
 
 
-        public override Android.Support.V4.App.Fragment GetItem(int position)
+        public override SupportFragment GetItem(int position)
         {
-            return _fragments[position];
+            return Fragments[position];
+        }
+
+        public void AddFragment(SupportFragment fragment, string name)
+        {
+            if (fragment == null) return;
+            Fragments.Add(fragment);
+            FragmentNames.Add(name);
+        }
+
+        public override ICharSequence GetPageTitleFormatted(int position)
+        {
+            return new Java.Lang.String(FragmentNames[position]);
         }
 
         //    private int _numberOfTabs;

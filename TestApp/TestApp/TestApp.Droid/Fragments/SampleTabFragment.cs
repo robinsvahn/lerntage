@@ -10,22 +10,22 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using SupportFragment = Android.Support.V4.App.Fragment;
 
 namespace TestApp.Droid.Fragments
 {
-    internal class SampleTabFragment : Fragment
+    internal class SampleTabFragment : SupportFragment
     {
+        private View _myView;
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            view = inflater.Inflate(Resource.Layout.Tab, container, false);
+            _myView = inflater.Inflate(Resource.Layout.Tab, container, false);
 
             var sampleTextView =
-                view.FindViewById<TextView>(Resource.Id.sampleTextView);
+                _myView.FindViewById<TextView>(Resource.Id.sampleTextView);
                 sampleTextView.Text = "sample fragment text";
 
-            return view;
+            return _myView;
         }
     }
 }
