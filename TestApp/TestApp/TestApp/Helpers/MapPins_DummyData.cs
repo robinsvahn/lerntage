@@ -37,8 +37,6 @@ namespace TestApp.Droid.Helpers
                 new MapPin("Amstad Chäslädeli GmbH", 47.355772, 8.56138),
                 new MapPin("Chäslädeli Mönchaltorf", 47.3102817, 8.7203981)
             };
-
-            throw new NotImplementedException();
         }
     }
 }

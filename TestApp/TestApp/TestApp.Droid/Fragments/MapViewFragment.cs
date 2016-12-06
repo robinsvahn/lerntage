@@ -17,13 +17,17 @@ using SupportFragment = Android.Support.V4.App.Fragment;
 
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
+using Android.Gms.Common.Apis;
+using Android.Gms.Location.Places;
+using Android.Locations;
 using Android.Support.V4.Content;
+using TestApp.Droid.Helpers;
 using TestApp.Model;
-using TestApp.Helpers;
 
 namespace TestApp.Droid.Fragments
 {
-    public class MapViewFragment : SupportFragment, IOnMapReadyCallback, GoogleMap.IOnMapClickListener ,GoogleApiClient.IConnectionCallbacks, GoogleApiClient.IOnConnectionFailedListener
+    public class MapViewFragment : SupportFragment, IOnMapReadyCallback, GoogleMap.IOnMapClickListener ,GoogleApiClient.IConnectionCallbacks,
+        GoogleApiClient.IOnConnectionFailedListener, GoogleMap.IOnMarkerClickListener
     {
         private View _myView;
         private MapView _myMapView;
@@ -54,23 +58,22 @@ namespace TestApp.Droid.Fragments
 
         public void OnMapReady(GoogleMap googleMap)
         {
-            MapPins_DummyData mapPinsClass = new MapPins_DummyData(Activity);
-            List<MapPin> mapPins = mapPinsClass.getMapPins();
-            _myMapView = googleMap;
+            MapPins_DummyData mapPinsClass = new MapPins_DummyData();
+            List<MapPin> mapPins = mapPinsClass.Pins;
+            _myMap = googleMap;
 
-            googleMap.SetOnMarkerClickListener(this);
+            _myMap.SetOnMarkerClickListener(this);
 
-            for (MapPin pin : mapPins)
+            foreach (MapPin pin in mapPins)
             {
                 googleMap.AddMarker(new MarkerOptions()
-                        .Position =new LatLng(Double.parseDouble(pin.ShopLatitude()), Double.parseDouble(pin.ShopLongitude()))
-                        .Title = pin.ShopName());
+                        .SetPosition(new LatLng(pin.ShopLatitude, pin.ShopLongtitude))
+                        .SetTitle(pin.ShopName));
             }
 
 
             //        checkPermissions();
-            if (ContextCompat.CheckSelfPermission(Activity, Manifest.Permission.AccessFineLocation)
-                    == PackageManager.PERMISSION_GRANTED)
+            if (ContextCompat.CheckSelfPermission(Activity, Manifest.Permission.AccessFineLocation) == Permission.Granted)
             {
                 googleMap.MyLocationEnabled = true;
 
@@ -81,8 +84,19 @@ namespace TestApp.Droid.Fragments
             }
             else
             {
-                onRequestPermissionsResult(3, new String[] { "android.permission.ACCESS_FINE_LOCATION" }, new int[] { 1 });
+                OnRequestPermissionsResult(3, new String[] { "android.permission.ACCESS_FINE_LOCATION" }, new Permission[] { Permission.Granted, });
             }
+            //new int[] { 1 }
+        }
+
+        protected void BuildGoogleApiClient()
+        {
+            Toast.MakeText(Activity, "BuildGoogleApiClient", ToastLength.Short).Show();
+            _myGoogleApiClient = new GoogleApiClient.Builder(Activity)
+                    .AddConnectionCallbacks(this).AddConnectionCallbacks(this)
+                    .AddOnConnectionFailedListener(this)
+                    .AddApi()
+                    .Build();
         }
 
         public void OnMapClick(LatLng point)
@@ -101,6 +115,11 @@ namespace TestApp.Droid.Fragments
         }
 
         public void OnConnectionFailed(ConnectionResult result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool OnMarkerClick(Marker marker)
         {
             throw new NotImplementedException();
         }
