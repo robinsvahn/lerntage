@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MapPins_DummyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\MapPin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Model\PopUpWindowDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MyClass.cs" />
   </ItemGroup>
 </Project>

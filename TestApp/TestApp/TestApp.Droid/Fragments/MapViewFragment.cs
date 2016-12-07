@@ -17,17 +17,19 @@ using SupportFragment = Android.Support.V4.App.Fragment;
 
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Gms.Common.Apis;
+using Android.Gms.Location;
 using Android.Gms.Location.Places;
 using Android.Locations;
+using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using TestApp.Droid.Helpers;
 using TestApp.Model;
+using ILocationListener = Android.Gms.Location.ILocationListener;
 
 namespace TestApp.Droid.Fragments
 {
     public class MapViewFragment : SupportFragment, IOnMapReadyCallback, GoogleMap.IOnMapClickListener ,GoogleApiClient.IConnectionCallbacks,
-        GoogleApiClient.IOnConnectionFailedListener, GoogleMap.IOnMarkerClickListener
+        GoogleApiClient.IOnConnectionFailedListener, GoogleMap.IOnMarkerClickListener, ILocationListener
     {
         private View _myView;
         private MapView _myMapView;
@@ -51,7 +53,6 @@ namespace TestApp.Droid.Fragments
             _myMapView.OnCreate(savedInstanceState);
             _myMapView.OnResume();
             _myMapView.GetMapAsync(this);
-
 
             return _myView;
         }
@@ -95,8 +96,17 @@ namespace TestApp.Droid.Fragments
             _myGoogleApiClient = new GoogleApiClient.Builder(Activity)
                     .AddConnectionCallbacks(this).AddConnectionCallbacks(this)
                     .AddOnConnectionFailedListener(this)
-                    .AddApi()
+                    .AddApi(LocationServices.API)
                     .Build();
+        }
+
+        public void SetCameraPosition(double lon, double lat)
+        {
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .Target(new LatLng(lat, lon)).Zoom(10).Build();
+
+            _myMap.AnimateCamera(CameraUpdateFactory
+                    .NewCameraPosition(cameraPosition));
         }
 
         public void OnMapClick(LatLng point)
@@ -106,22 +116,50 @@ namespace TestApp.Droid.Fragments
 
         public void OnConnected(Bundle connectionHint)
         {
-            throw new NotImplementedException();
+            Toast.MakeText(Activity, "onConnected", ToastLength.Short).Show();
+            if (ContextCompat.CheckSelfPermission(Activity, Manifest.Permission.AccessFineLocation) != Permission.Granted  
+                    && ContextCompat.CheckSelfPermission(Activity, Manifest.Permission.AccessCoarseLocation)
+                    != Permission.Granted)
+            {
+                return;
+            }
+
+            Location myLastLocation = LocationServices.FusedLocationApi.GetLastLocation(
+                    _myGoogleApiClient); //Needed, Without this an exception is thrown at Row: 192
+
+            LocationRequest myLocationRequest = new LocationRequest();
+            myLocationRequest.SetInterval(30000); //30 seconds
+            myLocationRequest.SetFastestInterval(25000); //25 seconds
+            myLocationRequest.SetPriority(LocationRequest.PriorityBalancedPowerAccuracy);
+
+            LocationServices.FusedLocationApi.RequestLocationUpdates(_myGoogleApiClient, myLocationRequest, this);
+
+            myLastLocation = LocationServices.FusedLocationApi.GetLastLocation(
+                    _myGoogleApiClient);
+
+            SetCameraPosition(myLastLocation.Longitude, myLastLocation.Latitude);
         }
 
         public void OnConnectionSuspended(int cause)
         {
-            throw new NotImplementedException();
+            Toast.MakeText(Activity, "Connection Suspended", ToastLength.Short).Show();
         }
 
         public void OnConnectionFailed(ConnectionResult result)
         {
-            throw new NotImplementedException();
+            Toast.MakeText(Activity, "Connection Failed", ToastLength.Short).Show();
         }
 
         public bool OnMarkerClick(Marker marker)
         {
-            throw new NotImplementedException();
+            PopUpWindowDialog markerPopUp = new PopUpWindowDialog(Context, marker);
+            markerPopUp.Show();
+            return true;
+        }
+
+        public void OnLocationChanged(Location location)
+        {
+            Toast.MakeText(Activity, "Location Changed", ToastLength.Short).Show();
         }
     }
 }

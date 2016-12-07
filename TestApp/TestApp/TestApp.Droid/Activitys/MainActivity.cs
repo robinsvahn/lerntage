@@ -88,7 +88,7 @@ namespace TestApp.Droid
 
             var adapter = new PageAdapter(SupportFragmentManager);
             adapter.AddFragment(new SampleTabFragment(), "Fragment 1");
-            adapter.AddFragment(new SampleTabFragment(), "Fragment 2");
+            adapter.AddFragment(new MapViewFragment(), "Fragment 2");
 
             viewPager.Adapter = adapter;
         }
